@@ -2,7 +2,7 @@
     package="com.example.kura">
     <uses-permission android:name="android.permission.INTERNET"/>
    <application
-        android:label="kura"
+        android:label="Kura"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

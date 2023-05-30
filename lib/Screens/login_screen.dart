@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:kura/Screens/chat_screen.dart';
 import 'package:kura/Screens/register_screen.dart';
 import '../Components/rounded_rectangular_button.dart';
 import '../constants.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -15,6 +18,28 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool obscureText = true;
+  final _emailTextController = TextEditingController();
+  final _passwordTextController = TextEditingController();
+  final _auth = FirebaseAuth.instance;
+
+  void login() async {
+    try {
+      await _auth.signInWithEmailAndPassword(
+        email: _emailTextController.text.trim(),
+        password: _passwordTextController.text.trim(),
+      );
+      // Navigator.pushNamed(context, ChatScreen.id);
+    } catch (e) {
+      print('Error is : ' + e.toString());
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _emailTextController.dispose();
+    _passwordTextController.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,14 +51,20 @@ class _LoginScreenState extends State<LoginScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Flexible(child: Image.asset('assets/images/logo_1.png')),
-              SizedBox(height: 50),
+              Flexible(
+                flex: 2,
+                child: Image.asset('assets/images/logo_1.png'),
+              ),
+              Center(
+                  child: Text('Kura !',
+                      style: GoogleFonts.bebasNeue(fontSize: 55))),
+              const SizedBox(height: 20),
               Text('Login',
                   style: TextStyle(
                       fontSize: 25,
-                      color: Colors.black,
+                      color: Colors.black.withOpacity(0.8),
                       fontWeight: FontWeight.bold)),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Row(
                 // mainAxisAlignment: MainAxisAlignment.start,
                 // crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -45,6 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   Expanded(
                     child: TextField(
+                      controller: _emailTextController,
                       decoration:
                           kTextFieldDecoration.copyWith(hintText: 'Email ID'),
                     ),
@@ -62,6 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   Expanded(
                     child: TextField(
+                      controller: _passwordTextController,
                       obscureText: obscureText,
                       decoration: kTextFieldDecoration.copyWith(
                           hintText: 'Password',
@@ -79,7 +112,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 ],
               ),
               const SizedBox(height: 50),
-              const RoundedRectangularButton(title: 'Login'),
+              RoundedRectangularButton(
+                title: 'Login',
+                onPressed: login,
+              ),
               const Flexible(
                   child: SizedBox(
                 height: 200,
@@ -97,14 +133,14 @@ class _LoginScreenState extends State<LoginScreen> {
                         context,
                         // RegisterScreen.id,
                         PageTransition(
-                            duration: Duration(milliseconds: 250),
+                            duration: const Duration(milliseconds: 250),
                             type: PageTransitionType.rightToLeft,
                             child: RegisterScreen()),
                       );
                     },
                     child: const Text('  Register',
                         style: TextStyle(
-                            color: Colors.blueAccent,
+                            color: kPrimaryColor,
                             fontWeight: FontWeight.bold,
                             fontSize: 15)),
                   ),

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "134652778365",
+    "project_id": "kura-app-c4f04",
+    "storage_bucket": "kura-app-c4f04.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:134652778365:android:1e930397f4651e2b451e14",
+        "android_client_info": {
+          "package_name": "com.example.kura"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "134652778365-vqgv1sjd1ordcg72otb356clr4a87g3n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7ebNNm76D0pMI6a4GFtjMW9iOXxzKYUQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "134652778365-vqgv1sjd1ordcg72otb356clr4a87g3n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
