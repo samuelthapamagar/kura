@@ -1,12 +1,15 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:kura/Screens/chat_screen.dart';
 import 'package:kura/Screens/login_screen.dart';
 import 'package:page_transition/page_transition.dart';
+import '../Components/next_screen.dart';
 import '../Components/rounded_rectangular_button.dart';
 import '../constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../helper/user_login_status.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -20,9 +23,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
+
   bool passwordObscureText = true;
   bool confirmPasswordobscureText = true;
   final _auth = FirebaseAuth.instance;
+  final _firestore = FirebaseFirestore.instance;
 
   void register() async {
     if (passwordConfirmed()) {
@@ -30,7 +37,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
         await _auth.createUserWithEmailAndPassword(
             email: _emailController.text.trim(),
             password: _passwordController.text.trim());
-        // Navigator.pushNamed(context, ChatScreen.id);
+        addUserDetails(_firstNameController.text.trim(),
+            _lastNameController.text.trim(), _emailController.text.trim());
+        await UserLoginStatus.saveUserLoggedInStatus(true);
+        await UserLoginStatus.saveUserEmailSF(_emailController.text.trim());
+        if (context.mounted) nextScreenReplace(context, ChatScreen());
       } catch (e) {
         print('Error is : ' + e.toString());
       }
@@ -48,11 +59,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
   }
 
+  Future addUserDetails(String firstName, String lastName, String email) async {
+    await _firestore.collection('users').add({
+      'first name': firstName,
+      'last name': lastName,
+      'email': email,
+    });
+  }
+
   @override
   void dispose() {
     _confirmPasswordController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _firstNameController.dispose();
+    _lastNameController.dispose();
     super.dispose();
   }
 
@@ -78,10 +99,43 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       fontSize: 25,
                       color: Colors.black.withOpacity(0.8),
                       fontWeight: FontWeight.bold)),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Row(
-                // mainAxisAlignment: MainAxisAlignment.start,
-                // crossAxisAlignment: CrossAxisAlignment.stretch,
+                // First name
+                children: [
+                  Icon(
+                    Icons.person,
+                    size: 20,
+                    color: Colors.black.withOpacity(0.5),
+                  ),
+                  Expanded(
+                    child: TextField(
+                      controller: _firstNameController,
+                      decoration:
+                          kTextFieldDecoration.copyWith(hintText: 'First Name'),
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                // Last name
+                children: [
+                  Icon(
+                    Icons.person,
+                    size: 20,
+                    color: Colors.black.withOpacity(0.5),
+                  ),
+                  Expanded(
+                    child: TextField(
+                      controller: _lastNameController,
+                      decoration:
+                          kTextFieldDecoration.copyWith(hintText: 'Last Name'),
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                // Email
                 children: [
                   Icon(
                     FontAwesomeIcons.at,
@@ -98,8 +152,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ],
               ),
               Row(
-                // mainAxisAlignment: MainAxisAlignment.start,
-                // crossAxisAlignment: CrossAxisAlignment.stretch,
+                //Password
                 children: [
                   Icon(
                     FontAwesomeIcons.lock,
@@ -126,8 +179,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ],
               ),
               Row(
-                // mainAxisAlignment: MainAxisAlignment.start,
-                // crossAxisAlignment: CrossAxisAlignment.stretch,
+                //confirm password
                 children: [
                   Icon(
                     FontAwesomeIcons.lock,

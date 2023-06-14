@@ -21,6 +21,7 @@ dependencies:
   firebase_auth: ^4.6.1
   firebase_core: ^2.13.0
   google_fonts: ^4.0.4
+  shared_preferences: ^2.1.2
 
 
 

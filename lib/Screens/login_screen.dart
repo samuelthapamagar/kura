@@ -3,10 +3,13 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:kura/Screens/chat_screen.dart';
 import 'package:kura/Screens/register_screen.dart';
+import '../Components/next_screen.dart';
 import '../Components/rounded_rectangular_button.dart';
 import '../constants.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../helper/user_login_status.dart';
+import 'forgot_password_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -28,7 +31,10 @@ class _LoginScreenState extends State<LoginScreen> {
         email: _emailTextController.text.trim(),
         password: _passwordTextController.text.trim(),
       );
-      // Navigator.pushNamed(context, ChatScreen.id);
+      await UserLoginStatus.saveUserLoggedInStatus(true);
+      await UserLoginStatus.saveUserEmailSF(_emailTextController.text.trim());
+      // await HelperFunctions.saveUserNameSF(snapshot.docs[0]['fullName']);
+      if (context.mounted) nextScreenReplace(context, const ChatScreen());
     } catch (e) {
       print('Error is : ' + e.toString());
     }
@@ -43,9 +49,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
+    return SafeArea(
+      child: Scaffold(
+        body: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -111,6 +117,22 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ],
               ),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, ForgotPasswordScreen.id);
+                    },
+                    child: const Text(
+                      'Forgot Password?',
+                      style: TextStyle(
+                          color: kPrimaryColor, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
+              ),
               const SizedBox(height: 50),
               RoundedRectangularButton(
                 title: 'Login',
@@ -135,7 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         PageTransition(
                             duration: const Duration(milliseconds: 250),
                             type: PageTransitionType.rightToLeft,
-                            child: RegisterScreen()),
+                            child: const RegisterScreen()),
                       );
                     },
                     child: const Text('  Register',

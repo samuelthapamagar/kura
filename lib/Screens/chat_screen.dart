@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:kura/Components/next_screen.dart';
 import 'package:kura/Components/rounded_rectangular_button.dart';
 import 'package:kura/Screens/login_screen.dart';
+import 'package:kura/helper/user_login_status.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({Key? key}) : super(key: key);
@@ -13,6 +15,19 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   final _auth = FirebaseAuth.instance;
+
+  Future signOut() async {
+    try {
+      await UserLoginStatus.saveUserLoggedInStatus(false);
+      await UserLoginStatus.saveUserEmailSF("");
+      // await HelperFunctions.saveUserNameSF("");
+      await _auth.signOut();
+      nextScreen(context, const LoginScreen());
+    } catch (e) {
+      return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,23 +41,12 @@ class _ChatScreenState extends State<ChatScreen> {
               Center(
                 child: Text(
                   'Chat Screen : Signed in as ${_auth.currentUser?.email}',
-                  style: TextStyle(fontSize: 20),
+                  style: const TextStyle(fontSize: 20),
                 ),
               ),
               RoundedRectangularButton(
                 title: 'Sign Out',
-                onPressed: () async {
-                  try {
-                    // Navigator.pushNamed(context, LoginScreen.id);
-                    if (_auth.currentUser != null) {
-                      await _auth
-                          .signOut(); //don't need navigator because of the condition in MainScreen
-                      // Navigator.pushNamed(context, LoginScreen.id);
-                    }
-                  } catch (e) {
-                    print(e);
-                  }
-                },
+                onPressed: signOut,
               )
             ],
           ),
